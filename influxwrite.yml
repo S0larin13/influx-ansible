@@ -1,0 +1,21 @@
+- hosts: localhost
+  tasks:
+    - name: Obtener información del kernel
+      command:  uname -r
+      register: kernel_info
+
+- name: Enviar información a InfluxDB
+     influxdb_write:
+       hostname: influxhost
+       port: 8086
+       database_name: DB
+       username:  username
+       password: passoword
+       ssl: true
+       validate_certs: false
+       data_points:
+       - measurement: kernel_info
+         tags:
+           host: "{{ inventory_hostname }}"
+         fields:
+           kernel_version: "{{ kernel_info.stdout }}"
